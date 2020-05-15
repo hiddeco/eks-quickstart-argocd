@@ -1,0 +1,14 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: argocd
+  namespace: argocd-system
+spec:
+  releaseName: argocd
+  chart:
+    git: https://github.com/argoproj/argo-helm
+    ref: master
+    path: charts/argo-cd
+  values:
+    # Install CRDs if you are using Helm2.
+    installCRDs: false
