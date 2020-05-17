@@ -1,0 +1,33 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  releaseName: argocd
+  chart:
+    git: https://github.com/argoproj/argo-helm
+    ref: master
+    path: charts/argo-cd
+  # Ref: https://github.com/argoproj/argo-helm/blob/master/charts/argo-cd/values.yaml
+  values:
+    # Install CRDs if you are using Helm 2.
+    installCRDs: false
+
+    server:
+      # ArgoCD config
+      # Ref: https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/
+      config:
+        # Enables anonymous user access. The anonymous users get default role permissions specified argocd-rbac-cm.yaml.
+        users.anonymous.enabled: "true"
+
+        # Disables admin user. Admin is enabled by default
+        admin.enabled: "false"
+
+      # ArgoCD RBAC config
+      # Ref: https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/
+      rbacConfig:
+        # policy.default is the name of the default role which Argo CD will falls back to, when
+        # authorizing API requests (optional). If omitted or empty, users may be still be able to login,
+        # but will see no apps, projects, etc...
+        policy.default: role:readonly
