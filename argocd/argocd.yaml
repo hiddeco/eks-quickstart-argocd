@@ -9,6 +9,12 @@ spec:
     git: https://github.com/argoproj/argo-helm
     ref: master
     path: charts/argo-cd
+  # Skip the creation of CRDs during a Helm 3 installation.
+  skipCRDs: true
+  # Wait until all Pods, PVCs, Services, and minimum number
+  # of Pods of a Deployment, StatefulSet, or ReplicaSet are
+  # in a ready state before marking the release as successful.
+  wait: true
   # Ref: https://github.com/argoproj/argo-helm/blob/master/charts/argo-cd/values.yaml
   values:
     # Install CRDs if you are using Helm 2.
