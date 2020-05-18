@@ -14,15 +14,16 @@ and easier bootstrapping of the ArgoCD environment.
 ## Components
 
 - [ArgoCD](https://argoproj.github.io/argo-cd/operator-manual/architecture/)
-  &mdash; To manage _applications_ in a GitOps manner.
-- Demo &mdash; A demo `AppProject` and guestbook `Application`
+  &mdash; To manage _applications_ in a GitOps manner, managed by Flux.
+- Demo project &mdash; A demo namespace, `AppProject` and guestbook
+  `Application`, managed by ArgoCD.
 
 ## Install
 
 Create an EKS cluster in your preferred region:
 
 ```sh
-eksctl create \
+eksctl create cluster \
 --name=<name> \
 --region=<region> \
 --nodes 2 \
@@ -63,22 +64,35 @@ git@github.com:hiddeco/eks-quickstart-argocd
 The command `eksctl enable profile` installs the ArgoCD on this
 cluster, and adds its manifests to the configured repository.
 
-List the installed ArgoCD Helm chart:
-
-```console
-$ kubectl get hr -A
-NAMESPACE   NAME     RELEASE   PHASE       STATUS     MESSAGE
-                        AGE
-argocd      argocd   argocd    Succeeded   deployed   Release was successful for Helm release
-'argocd' in 'argocd'.   8m30s
-```
-
-List the installed `Application` resources:
+List the by Flux applied `Application` resource:
 
 ```console
 $ kubectl get applications -n argocd
 NAME        AGE
 guestbook   4m8s
+```
+
+List the ArgoCD Helm chart, and wait for it to finish installation:
+
+```console
+$ kubectl get hr -A
+NAMESPACE   NAME     RELEASE   PHASE        STATUS            MESSAGE                                                       AGE
+argocd      argocd   argocd    Installing   pending-install   Running installation for Helm release 'argocd' in 'argocd'.   44s
+```
+
+Eventually when ArgoCD has started, the guestbook `Application`
+resources will be applied to the `demo` namespace:
+
+```console
+$ kubectl get pods -n demo
+NAME                            READY   STATUS    RESTARTS   AGE
+guestbook-ui-6796b99796-lb58c   1/1     Running   0          32s
+```
+
+```console
+$ kubectl get services -n demo
+NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+guestbook-ui   ClusterIP   10.100.38.131   <none>        80/TCP    32s
 ```
 
 Access the (read-only) ArgoCD dashboard with:
