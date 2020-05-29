@@ -37,3 +37,9 @@ spec:
         # authorizing API requests (optional). If omitted or empty, users may be still be able to login,
         # but will see no apps, projects, etc...
         policy.default: role:readonly
+
+      # Disable creation of service account, as this
+      # is expected to be created during the EKS bootstrap.
+      # Ref: https://eksctl.io/usage/iamserviceaccounts/
+      serviceAccount:
+        create: false
